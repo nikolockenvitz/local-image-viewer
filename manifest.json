@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "File Viewer",
-  "version": "0.1",
+  "version": "0.2",
   "description": "Extension to view local files in browser. Navigate to previous or next file by using arrow keys.",
   "content_scripts": [
     {
@@ -11,5 +11,10 @@
       "js": ["cs.js"],
       "run_at": "document_start"
     }
-  ]
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "update_url": "https://nikolockenvitz.github.io/firefox-addon-file-viewer/updates.json"
+    }
+  }
 }
