@@ -4,7 +4,7 @@
       "updates": [
         {
           "version": "0.2.2",
-          "update_link": "https://nikolockenvitz.github.io/local-image-viewer/xpi/local-image-viewer-0.2-fx.xpi",
+          "update_link": "https://nikolockenvitz.github.io/local-image-viewer/xpi/local_image_viewer-0.2.2-fx.xpi",
           "update_hash": "sha256:775a724e205803a53bc5d875d62b432c698128c9b4259a944d7f2bafbc041dbb"
         }
       ]
