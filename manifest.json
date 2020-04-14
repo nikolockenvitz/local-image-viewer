@@ -1,12 +1,12 @@
 {
   "manifest_version": 2,
-  "name": "File Viewer",
-  "version": "0.2",
-  "description": "Extension to view local files in browser. Navigate to previous or next file by using arrow keys.",
+  "name": "Local Image Viewer",
+  "version": "0.2.2",
+  "description": "Extension to view local images in browser. Navigate to previous or next image by using arrow keys.",
   "content_scripts": [
     {
       "matches": [
-        "file://*/*"
+        "file:///*"
       ],
       "js": ["cs.js"],
       "run_at": "document_start"
@@ -14,7 +14,7 @@
   ],
   "browser_specific_settings": {
     "gecko": {
-      "update_url": "https://nikolockenvitz.github.io/firefox-addon-file-viewer/updates.json"
+      "update_url": "https://nikolockenvitz.github.io/local-image-viewer/updates.json"
     }
   }
 }

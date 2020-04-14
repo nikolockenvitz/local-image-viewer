@@ -1,6 +1,5 @@
 const supportedFileTypesLowerCase = [ // MUST BE lower case, matches case insensitive
     "png", "jpg", "jpeg",
-    //"pdf",
 ];
 
 let curDirectory, curFilename;
@@ -49,20 +48,24 @@ function splitAtLast (text, separator) {
 }
 
 function redirectToAdjacentFile (filenames, diff) {
-    let ix = (filenames.indexOf(curFilename) + diff) % filenames.length;
-    if (ix < 0) ix += filenames.length
-    redirectToURL(curDirectory + "/" + filenames[ix]);
+    let path = getAdjacentFilePath(filenames, diff);
+    redirectToURL(path);
 }
 
-let redirectToURL = function (url) {
+function getAdjacentFilePath (filenames, diff) {
+    let ix = (filenames.indexOf(curFilename) + diff) % filenames.length;
+    if (ix < 0) ix += filenames.length
+    return curDirectory + "/" + filenames[ix];
+}
+
+function redirectToURL (url) {
     window.location.replace(url);
-};
+}
 
 async function main () {
     let filenames = await getListOfFilenamesInCurrentDirectory();
 
     if (!filenames.includes(curFilename)) {
-        console.log("current file is not part of supported files");
         return;
     }
 
