@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Local Image Viewer",
-  "version": "0.2.2",
+  "version": "0.3",
   "description": "Extension to view local images in browser. Navigate to previous or next image by using arrow keys.",
   "content_scripts": [
     {
