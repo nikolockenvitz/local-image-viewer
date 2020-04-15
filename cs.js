@@ -75,16 +75,16 @@ function preloadAdjacentFiles () {
     for (let i=0; i<NUMBER_OF_FILES_TO_PRELOAD; i++) {
         let diff = (Math.floor(i/2)+1)*(i%2?-1:1); // +1, -1, +2, -2, +3, ...
         let filepath = getAdjacentFilePath(diff);
-        _preloadAdjacentFile(filepath);
+        _preloadFile(filepath);
     }
 }
 
-function _preloadAdjacentFile (filepath) {
+function _preloadFile (filepath) {
     if (getImageElementBySrc(filepath)) return;
     let image = new Image();
     image.src = filepath;
-    image.style.maxWidth = document.body.clientWidth;
-    image.style.maxHeight = document.body.clientHeight;
+    image.style.maxWidth = "100%";
+    image.style.maxHeight = "100%";
     image.classList.add("transparent");
 
     image.classList.add("shrinkToFit");
@@ -126,18 +126,44 @@ function _preloadAdjacentFile (filepath) {
 }
 
 function loadAdjacentFile (diff) {
+    let filename = splitAtLast(getAdjacentFilePath(diff), "/")[1];
+    loadFile(filename);
+}
+
+function loadFile (filename) {
     let oldImage = getImageElementBySrc(curDirectory+"/"+curFilename);
     oldImage.style.display = "none";
 
-    curFilename = splitAtLast(getAdjacentFilePath(diff), "/")[1];
+    curFilename = filename;
     let newImage = getImageElementBySrc(curDirectory+"/"+curFilename);
     if (!newImage) {
-        _preloadAdjacentFile(curDirectory+"/"+curFilename);
+        _preloadFile(curDirectory+"/"+curFilename);
         newImage = getImageElementBySrc(curDirectory+"/"+curFilename);
     }
     newImage.style.display = "";
 
+    updateURLAndTitle();
     preloadAdjacentFiles();
+}
+
+function updateURLAndTitle () {
+    let filepath = curDirectory + "/" + curFilename;
+    let fileType = splitAtLast(curFilename, ".")[1].toUpperCase();
+    let image = getImageElementBySrc(filepath);
+    let scale = Math.floor(100 * Math.min(
+        document.body.clientWidth / image.naturalWidth,
+        document.body.clientHeight / image.naturalHeight
+    ));
+
+    let title = `${curFilename} (${fileType} Image,
+                ${image.naturalWidth} x ${image.naturalHeight} pixels)`;
+    if (scale < 100) title += ` - Scaled (${scale}%)`;
+    window.history.replaceState(
+        {},
+        title,
+        filepath
+    );
+    document.title = title;
 }
 
 
@@ -154,7 +180,7 @@ async function main () {
         switch (event.key) {
             case "ArrowLeft":
                 loadAdjacentFile(-1);
-                // TODO: maybe clear old cached files, make sure that reload leads to this new image
+                // TODO: maybe clear old cached files
                 break;
             case "ArrowRight":
                 loadAdjacentFile(1);
