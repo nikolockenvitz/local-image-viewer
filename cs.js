@@ -2,7 +2,7 @@ const supportedFileTypesLowerCase = [ // MUST BE lower case, matches case insens
     "png", "jpg", "jpeg", "webp",
 ];
 
-const NUMBER_OF_FILES_TO_PRELOAD = 2;
+const NUMBER_OF_FILES_TO_PRELOAD = 4;
 
 let curDirectory, curFilename;
 [curDirectory, curFilename] = splitAtLast(window.location.href, "/");
@@ -121,7 +121,7 @@ function _preloadFile (filepath) {
         }
     });
 
-    image.style.display = "none";
+    image.style.zIndex = "0";
     document.body.appendChild(image);
 }
 
@@ -132,7 +132,13 @@ function loadAdjacentFile (diff) {
 
 function loadFile (filename) {
     let oldImage = getImageElementBySrc(curDirectory+"/"+curFilename);
-    oldImage.style.display = "none";
+    oldImage.style.zIndex = "0";
+    if (!oldImage.classList.contains("shrinkToFit")) { // zoom out
+        oldImage.classList.add("shrinkToFit");
+        oldImage.classList.remove("overflowingVertical");
+        oldImage.style.maxWidth = "100%";
+        oldImage.style.maxHeight = "100%";
+    }
 
     curFilename = filename;
     let newImage = getImageElementBySrc(curDirectory+"/"+curFilename);
@@ -140,7 +146,7 @@ function loadFile (filename) {
         _preloadFile(curDirectory+"/"+curFilename);
         newImage = getImageElementBySrc(curDirectory+"/"+curFilename);
     }
-    newImage.style.display = "";
+    newImage.style.zIndex = "2";
 
     updateURLAndTitle();
     preloadAdjacentFiles();
@@ -166,6 +172,19 @@ function updateURLAndTitle () {
     document.title = title;
 }
 
+function createBackgroundDiv () {
+    let div = document.createElement("div");
+    div.style.width = "100%";
+    div.style.height = "100%";
+    div.style.background = "#222";
+    div.style.position = "absolute";
+    div.style.zIndex = "1";
+    document.body.appendChild(div);
+
+    let mainImage = getImageElementBySrc(curDirectory+"/"+curFilename);
+    mainImage.style.zIndex = "2";
+}
+
 
 async function main () {
     filenames = await getListOfFilenamesInCurrentDirectory();
@@ -174,6 +193,7 @@ async function main () {
         return;
     }
 
+    createBackgroundDiv();
     preloadAdjacentFiles();
 
     document.addEventListener("keyup", function (event) {
