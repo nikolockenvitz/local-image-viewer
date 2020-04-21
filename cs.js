@@ -89,40 +89,80 @@ function _preloadFile (filepath) {
 
     image.classList.add("shrinkToFit");
     image.addEventListener("click", function (event) {
-        function isImageSmallerThanBody () {
-            return image.naturalWidth <= document.body.clientWidth
-                && image.naturalHeight <= document.body.clientHeight;
-        }
-        if (isImageSmallerThanBody()) {
-            image.classList.remove("shrinkToFit");
-            return;
-        }
-        if (image.classList.contains("shrinkToFit")) {
-            // zoom in
-            let prevWidth = image.clientWidth;
-            let prevHeight = image.clientHeight;
-            let clickPosXRelativeToImage = event.layerX;
-            let clickPosYRelativeToImage = event.layerY;
-            image.classList.remove("shrinkToFit");
-            image.classList.add("overflowingVertical");
-            image.style.maxWidth = "";
-            image.style.maxHeight = "";
-
-            // centers the clicked position
-            let scrollX = (clickPosXRelativeToImage/prevWidth)*image.naturalWidth - document.body.clientWidth/2;
-            let scrollY = (clickPosYRelativeToImage/prevHeight)*image.naturalHeight - document.body.clientHeight/2;
-            window.scrollTo(scrollX, scrollY);
-        } else {
-            // zoom out
-            image.classList.add("shrinkToFit");
-            image.classList.remove("overflowingVertical");
-            image.style.maxWidth = "100%";
-            image.style.maxHeight = "100%";
-        }
+        zoomImage(image, event);
     });
 
     image.style.zIndex = "0";
     document.body.appendChild(image);
+}
+
+function zoomImage (image, event) {
+    if (!isImageGreaterThanBody(image)) {
+        image.classList.remove("shrinkToFit");
+        image.classList.remove("overflowingVertical");
+        image.classList.remove("overflowingHorizontalOnly");
+        return;
+    }
+    if (image.naturalHeight > image.height || image.naturalWidth > image.width) {
+        // zoom in
+        let prevWidth = image.clientWidth;
+        let prevHeight = image.clientHeight;
+        let clickPosXRelativeToImage = event.layerX;
+        let clickPosYRelativeToImage = event.layerY;
+        image.classList.remove("shrinkToFit");
+        if (image.naturalHeight > document.body.clientHeight) {
+            image.classList.add("overflowingVertical");
+        } else {
+            image.classList.add("overflowingHorizontalOnly");
+        }
+        image.style.maxWidth = "";
+        image.style.maxHeight = "";
+
+        // centers the clicked position
+        if (event) {
+            let scrollX = (clickPosXRelativeToImage/prevWidth)*image.naturalWidth - document.body.clientWidth/2;
+            let scrollY = (clickPosYRelativeToImage/prevHeight)*image.naturalHeight - document.body.clientHeight/2;
+            window.scrollTo(scrollX, scrollY);
+        }
+    } else {
+        // zoom out
+        image.classList.add("shrinkToFit");
+        image.classList.remove("overflowingVertical");
+        image.classList.remove("overflowingHorizontalOnly");
+        image.style.maxWidth = "100%";
+        image.style.maxHeight = "100%";
+    }
+}
+
+function isImageGreaterThanBody (image) {
+    return image.naturalWidth > document.body.clientWidth
+        || image.naturalHeight > document.body.clientHeight;
+}
+
+function updateZoomOfCurrentImage () {
+    let image = getImageElementBySrc(curDirectory+"/"+curFilename);
+    if (!isImageGreaterThanBody(image)) {
+        // image fits into body -> no zoom needed
+        image.classList.remove("shrinkToFit");
+        image.classList.remove("overflowingVertical");
+        image.classList.remove("overflowingHorizontalOnly");
+        return;
+    }
+
+    image.classList.add("shrinkToFit");
+    if (image.classList.contains("overflowingVertical") || image.classList.contains("overflowingHorizontalOnly")) {
+        // currently zoomed in -> update overflow
+        if (image.naturalHeight > document.body.clientHeight) {
+            image.classList.add("overflowingVertical");
+            image.classList.remove("overflowingHorizontalOnly");
+        } else {
+            image.classList.add("overflowingHorizontalOnly");
+            image.classList.remove("overflowingVertical");
+        }
+    } else {
+        image.style.maxWidth = "100%";
+        image.style.maxHeight = "100%";
+    }
 }
 
 function loadAdjacentFile (diff) {
@@ -136,6 +176,7 @@ function loadFile (filename) {
     if (!oldImage.classList.contains("shrinkToFit")) { // zoom out
         oldImage.classList.add("shrinkToFit");
         oldImage.classList.remove("overflowingVertical");
+        oldImage.classList.remove("overflowingHorizontalOnly");
         oldImage.style.maxWidth = "100%";
         oldImage.style.maxHeight = "100%";
     }
@@ -147,6 +188,10 @@ function loadFile (filename) {
         newImage = getImageElementBySrc(curDirectory+"/"+curFilename);
     }
     newImage.style.zIndex = "2";
+    if (newImage.naturalWidth === newImage.width && newImage.naturalHeight === newImage.height) {
+        // remove zoom-mouse-pointer if zoom-in not possible
+        newImage.classList.remove("shrinkToFit");
+    }
 
     updateURLAndTitle();
     preloadAdjacentFiles();
@@ -206,6 +251,10 @@ async function main () {
                 loadAdjacentFile(1);
                 break;
         }
+    });
+
+    window.addEventListener("resize", function () {
+        updateZoomOfCurrentImage();
     });
 };
 main();

@@ -11,9 +11,9 @@
           "update_link": "https://nikolockenvitz.github.io/local-image-viewer/xpi/local_image_viewer-0.3-fx.xpi",
           "update_hash": "sha256:74399ac42d0f84aed267a5ed8c42f78ad6315106c940d2970616fba9985616b4"
         }, {
-          "version": "0.4",
-          "update_link": "https://nikolockenvitz.github.io/local-image-viewer/xpi/local_image_viewer-0.4-fx.xpi",
-          "update_hash": "sha256:5170a27d055a83c5111efbaa38dbe5a9701164b5897679df39bd3668c86b78e2"
+          "version": "0.4.1",
+          "update_link": "https://nikolockenvitz.github.io/local-image-viewer/xpi/local_image_viewer-0.4.1-fx.xpi",
+          "update_hash": "sha256:0d5b3b2058d932f375cf8c9248aee98e8c9313bdd0b3a67c981e83d01bd3afce"
         }
       ]
     }
