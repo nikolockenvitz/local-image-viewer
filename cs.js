@@ -35,6 +35,7 @@ function getFilenameIfSupportedFile (line) {
         let filename = temp[1];
         let type = temp[temp.length-2];
         if (type === "FILE" && hasSupportedFileType(filename)) {
+            filename = applyCorrectURLEncoding(filename);
             return filename;
         }
     }
@@ -43,6 +44,14 @@ function getFilenameIfSupportedFile (line) {
 function hasSupportedFileType (filename) {
     let fileType = splitAtLast(filename, ".")[1].toLowerCase();
     return supportedFileTypesLowerCase.includes(fileType);
+}
+
+function applyCorrectURLEncoding (filename) {
+    /* the encoding of retrieved filenames of the directory and the encoding
+     * of the url differ a bit, e.g. when opening a picture with a "(" in the
+     * name it will be "(" in the url but "%28" in the directory file list
+     */
+    return encodeURI(decodeURI(filename));
 }
 
 function splitAtLast (text, separator) {
@@ -206,7 +215,7 @@ function updateURLAndTitle () {
         document.body.clientHeight / image.naturalHeight
     ));
 
-    let title = `${curFilename} (${fileType} Image,
+    let title = `${decodeURI(curFilename)} (${fileType} Image,
                 ${image.naturalWidth} x ${image.naturalHeight} pixels)`;
     if (scale < 100) title += ` - Scaled (${scale}%)`;
     window.history.replaceState(
