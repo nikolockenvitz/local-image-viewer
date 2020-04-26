@@ -1,16 +1,85 @@
 const fs = require("fs");
+const path = require("path");
 const exec = require('child_process').exec;
+const AdmZip = require('adm-zip');
 
 const DIRECTORY_NAME_XPI = "xpi";
 const FILEPATH_MANIFEST  = "manifest.json";
 const FILEPATH_UPDATES   = "updates.json";
 const FILEPATH_README    = "README.md";
-const URL_UPDATES        = "https://nikolockenvitz.github.io/local-image-viewer";
+
+// name of current directory must match repository and addon name
+const REPOSITORY_NAME = path.basename(process.cwd());
+const URL_UPDATES     = `https://nikolockenvitz.github.io/${REPOSITORY_NAME}`;
+const AMO_URL = "https://addons.mozilla.org/en-US/developers/addon/7dfd99ca26d943fc9818/versions/submit/";
+
+const ZIP_CONTENT = {
+    folders: [
+    ],
+    files: [
+        "cs.js",
+        "manifest.json",
+    ],
+};
 
 const README_BADGE_INSERT_START = "<!-- SHIELD IO BADGES INSTALL START -->";
 const README_BADGE_INSERT_END   = "<!-- SHIELD IO BADGES INSTALL END -->";
 
+
 async function main () {
+    const options = process.argv.slice(3);
+    switch (process.argv[2]) {
+        case "build":
+            await buildAddon();
+            if (options.includes("amo")) {
+                openAMOAddonUpload();
+            }
+            break;
+        case "deploy":
+            deployAddon();
+            break;
+    }
+}
+main();
+
+
+async function buildAddon () {
+    // creates a .zip to be uploaded to AMO
+    const zipFilename = `${REPOSITORY_NAME}.zip`;
+
+    await deletePreviousZipFile(zipFilename);
+    await createZip(zipFilename);
+
+    console.log(`created ${zipFilename}`);
+}
+
+async function deletePreviousZipFile (zipFilename) {
+    try {
+        await deleteFile(zipFilename);
+    } catch {}
+}
+
+async function createZip (zipFilename) {
+    const zip = new AdmZip();
+    for (let folder of ZIP_CONTENT.folders) {
+        zip.addLocalFolder(folder, folder);
+    }
+    for (let file of ZIP_CONTENT.files) {
+        const filepath = path.dirname(file);
+        zip.addLocalFile(file, filepath !== "." ? filepath : undefined);
+    }
+    zip.writeZip(zipFilename);
+}
+
+function openAMOAddonUpload () {
+    if (AMO_URL) {
+        executeCommand(`start ${AMO_URL}`);
+    }
+}
+
+
+async function deployAddon () {
+    // adds new addon version to updates.json and README.md + removes previous
     const version = await getVersion();
     const xpiFilepath = await getFilepathOfXPI(version);
     const xpiFileHash = await getFileHash(xpiFilepath);
@@ -20,7 +89,6 @@ async function main () {
 
     console.log(`added ${xpiFilepath} to ${FILEPATH_UPDATES} and ${FILEPATH_README}`);
 }
-main();
 
 async function getVersion () {
     const manifest = await readFile(FILEPATH_MANIFEST);
@@ -56,7 +124,15 @@ function removePreviousPatchVersions (updatesJSON, addonVersion) {
     updatesJSON.addons[Object.keys(updatesJSON.addons)[0]].updates.filter(function (version) {
         const curVersion = getSemanticVersion(version.version);
         if (addonVersion.major === curVersion.major && addonVersion.minor === curVersion.minor) {
-            return false;
+            if (addonVersion.patch < curVersion.patch) {
+                console.error(`There is already a version ${version.version}`);
+                return true;
+            } else if (addonVersion.patch === curVersion.patch) {
+                return false;
+            } else {
+                deleteXPI(version.version);
+                return false;
+            }
         }
         return true;
     });
@@ -65,6 +141,12 @@ function removePreviousPatchVersions (updatesJSON, addonVersion) {
 function getSemanticVersion (versionString) {
     let [major, minor, patch] = versionString.split(".").map(Number);
     return { major, minor, patch };
+}
+
+async function deleteXPI (version) {
+    const filepath = await getFilepathOfXPI(version);
+    console.log(`delete ${filepath}`);
+    await deleteFile(filepath);
 }
 
 function addNewVersion (updatesJSON, addonVersion, xpiFilepath, xpiFileHash) {
@@ -110,6 +192,18 @@ async function readFile (filepath) {
 async function writeFile (filepath, content) {
     return new Promise(async function (resolve, reject) {
         fs.writeFile(filepath, content, "utf8", function (err) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve();
+            }
+        });
+    });
+}
+
+async function deleteFile (filepath) {
+    return new Promise(async function (resolve, reject) {
+        fs.unlink(filepath, function (err) {
             if (err) {
                 reject(err);
             } else {
