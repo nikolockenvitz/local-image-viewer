@@ -1,5 +1,6 @@
 const supportedFileTypesLowerCase = [ // MUST BE lower case, matches case insensitive
     "png", "jpg", "jpeg", "webp",
+    "svg",
 ];
 
 const NUMBER_OF_FILES_TO_PRELOAD = 4;
@@ -61,7 +62,7 @@ function splitAtLast (text, separator) {
 }
 
 function redirectToAdjacentFile (diff) {
-    let path = getAdjacentFilePath(filenames, diff);
+    let path = getAdjacentFilePath(diff);
     redirectToURL(path);
 }
 
@@ -176,6 +177,10 @@ function updateZoomOfCurrentImage () {
 
 function loadAdjacentFile (diff) {
     let filename = splitAtLast(getAdjacentFilePath(diff), "/")[1];
+    if (splitAtLast(filename, ".")[1].toLowerCase() === "svg") {
+        redirectToAdjacentFile(diff);
+        return;
+    }
     loadFile(filename);
 }
 
@@ -239,7 +244,16 @@ function createBackgroundDiv () {
     mainImage.style.zIndex = "2";
 }
 
+function showAdjacentFile (diff) {
+    if (redirectFallback) {
+        redirectToAdjacentFile(diff);
+    } else {
+        loadAdjacentFile(diff);
+    }
+}
 
+
+const redirectFallback = document.body === null;
 async function main () {
     filenames = await getListOfFilenamesInCurrentDirectory();
 
@@ -247,17 +261,18 @@ async function main () {
         return;
     }
 
-    createBackgroundDiv();
-    preloadAdjacentFiles();
+    if (!redirectFallback) {
+        createBackgroundDiv();
+        preloadAdjacentFiles();
+    }
 
     document.addEventListener("keyup", function (event) {
         switch (event.key) {
             case "ArrowLeft":
-                loadAdjacentFile(-1);
-                // TODO: maybe clear old cached files
+                showAdjacentFile(-1);
                 break;
             case "ArrowRight":
-                loadAdjacentFile(1);
+                showAdjacentFile(1);
                 break;
         }
     });
