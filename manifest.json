@@ -3,6 +3,10 @@
   "name": "Local Image Viewer",
   "version": "0.5.1",
   "description": "Extension to view local images in browser. Navigate to previous or next image by using arrow keys.",
+  "icons": {
+    "48": "icons/icon48_dark_text.png",
+    "128": "icons/icon128_dark_text.png"
+  },
   "content_scripts": [
     {
       "matches": [
@@ -12,6 +16,15 @@
       "run_at": "document_start"
     }
   ],
+  "browser_action": {
+    "default_icon": "icons/icon48.png",
+    "default_title": "Local Image Viewer",
+    "theme_icons": [{
+      "light": "icons/icon48.png",
+      "dark": "icons/icon48_dark_text.png",
+      "size": 48
+    }]
+  },
   "browser_specific_settings": {
     "gecko": {
       "update_url": "https://nikolockenvitz.github.io/local-image-viewer/updates.json"
