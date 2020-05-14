@@ -18,6 +18,10 @@
           "version": "0.5.1",
           "update_link": "https://nikolockenvitz.github.io/local-image-viewer/xpi/local_image_viewer-0.5.1-fx.xpi",
           "update_hash": "sha256:06fc996cb1ebe211f796ce2734cb86fa52d159f396f48d0016e4dda3c70242d5"
+        }, {
+          "version": "0.6",
+          "update_link": "https://nikolockenvitz.github.io/local-image-viewer/xpi/local_image_viewer-0.6-fx.xpi",
+          "update_hash": "sha256:d84bd40504dcce347d0d421ee67cb4cbf18e3ed5fc8fb2ab97916f6d9719ab52"
         }
       ]
     }

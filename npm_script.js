@@ -4,6 +4,7 @@ const AMO_URL = "https://addons.mozilla.org/en-US/developers/addon/7dfd99ca26d94
 
 const ZIP_CONTENT = {
     folders: [
+        "icons/",
     ],
     files: [
         "cs.js",
