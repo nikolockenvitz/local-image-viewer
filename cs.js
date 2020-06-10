@@ -253,6 +253,11 @@ function showAdjacentFile (diff) {
 }
 
 
+function addContextMenuEntries () {
+    browser.runtime.sendMessage("bs-add-context-menu-entries");
+}
+
+
 let storage = {};
 async function loadDataFromStorage (name) {
     return new Promise(async function (resolve, reject) {
@@ -299,6 +304,18 @@ async function main () {
                 showAdjacentFile(-1);
                 break;
             case "ArrowRight":
+                showAdjacentFile(1);
+                break;
+        }
+    });
+
+    addContextMenuEntries();
+    browser.runtime.onMessage.addListener((message) => {
+        switch (message) {
+            case "prev-image":
+                showAdjacentFile(-1);
+                break;
+            case "next-image":
                 showAdjacentFile(1);
                 break;
         }

@@ -7,6 +7,7 @@ const ZIP_CONTENT = {
         "icons/",
     ],
     files: [
+        "bs_context_menu.js",
         "cs.js",
         "manifest.json",
     ],

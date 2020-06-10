@@ -16,6 +16,11 @@
       "run_at": "document_start"
     }
   ],
+  "background": {
+    "scripts": [
+      "bs_context_menu.js"
+    ]
+  },
   "browser_action": {
     "default_icon": "icons/icon48.png",
     "default_title": "Local Image Viewer",
@@ -27,7 +32,8 @@
     }]
   },
   "permissions": [
-    "storage"
+    "storage",
+    "contextMenus"
   ],
   "browser_specific_settings": {
     "gecko": {
