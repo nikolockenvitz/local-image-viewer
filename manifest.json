@@ -19,12 +19,16 @@
   "browser_action": {
     "default_icon": "icons/icon48.png",
     "default_title": "Local Image Viewer",
+    "default_popup": "popup/popup.html",
     "theme_icons": [{
       "light": "icons/icon48.png",
       "dark": "icons/icon48_dark_text.png",
       "size": 48
     }]
   },
+  "permissions": [
+    "storage"
+  ],
   "browser_specific_settings": {
     "gecko": {
       "update_url": "https://nikolockenvitz.github.io/local-image-viewer/updates.json"

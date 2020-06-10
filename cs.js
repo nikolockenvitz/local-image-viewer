@@ -253,9 +253,35 @@ function showAdjacentFile (diff) {
 }
 
 
+let storage = {};
+async function loadDataFromStorage (name) {
+    return new Promise(async function (resolve, reject) {
+        browser.storage.local.get(name).then((res) => {
+            storage[name] = res[name] || {};
+            resolve(res[name]);
+        });
+    });
+}
+
+async function saveDataToStorage () {
+    return new Promise(async function (resolve, reject) {
+        browser.storage.local.set(storage).then(() => {
+            resolve();
+        });
+    });
+}
+
+function isAddonDisabled () {
+    return storage.options["enable-addon"] === false;
+}
+
+
 const redirectFallback = document.body === null;
 async function main () {
-    filenames = await getListOfFilenamesInCurrentDirectory();
+    [filenames, options] = await Promise.all([
+        getListOfFilenamesInCurrentDirectory(),
+        loadDataFromStorage("options"),
+    ]);
 
     if (!filenames.includes(curFilename)) {
         return;
@@ -267,6 +293,7 @@ async function main () {
     }
 
     document.addEventListener("keyup", function (event) {
+        if (isAddonDisabled()) return;
         switch (event.key) {
             case "ArrowLeft":
                 showAdjacentFile(-1);
@@ -278,7 +305,11 @@ async function main () {
     });
 
     window.addEventListener("resize", function () {
+        if (isAddonDisabled()) return;
         updateZoomOfCurrentImage();
     });
 };
 main();
+browser.runtime.onConnect.addListener(() => {
+    main();
+});

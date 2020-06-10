@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+
+        <link rel="stylesheet" href="./popup.css">
+        <script src="./popup.js" type="text/javascript" defer></script>
+    </head>
+
+    <body class="noselect">
+        <div id="popup-content">
+            <div class="section">
+                <p class="section-heading">General</p>
+                <div class="section-text">
+                    <p>Enable Addon</p>
+                    <p><label class="switch">
+                        <input type="checkbox" id="enable-addon" checked>
+                        <span class="slider round"></span>
+                    </label></p>
+                    <p></p>
+                </div>
+                <div class="section-text">
+                    <p>Reload When Disabling Addon</p>
+                    <p><label class="switch">
+                        <input type="checkbox" id="reload-on-disabling" checked>
+                        <span class="slider round"></span>
+                    </label></p>
+                    <p></p>
+                </div>
+            </div>
+            <div class="section">
+                <p class="section-heading">More</p>
+                <div class="section-text external-link" title="https://github.com/nikolockenvitz/local-image-viewer">
+                    <p>View on GitHub</p>
+                    <p><span class="open-in-new-tab"><svg viewBox="0 0 10 10" style="margin: 2px 0 -2px 0;">
+                        <polyline points="4,2 2,2 2,8 8,8 8,6" />
+                        <polyline points="6,1 9,1 9,4" />
+                        <polyline points="5,5 9,1" />
+                    </svg></span></p>
+                    <p></p>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
