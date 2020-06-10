@@ -21,12 +21,13 @@ window.onload = async function () {
 let onChangeInput = async function (inputId) {
     options[inputId] = document.getElementById(inputId).checked;
     await saveOptionsToStorage();
-    if (inputId === "enable-addon" && options[inputId] === false &&
-      options["reload-on-disabling"] !== false) {
-        browser.tabs.reload();
-    } else {
-        runMainFunctionOfContentAndBackgroundScripts();
+    if (inputId === "enable-addon") {
+        if (options[inputId] === false && options["reload-on-disabling"] !== false) {
+            browser.tabs.reload();
+            return;
+        }
     }
+    runMainFunctionOfContentAndBackgroundScripts();
 };
 
 let runMainFunctionOfContentAndBackgroundScripts = function () {
@@ -37,7 +38,9 @@ let runMainFunctionOfContentAndBackgroundScripts = function () {
         }
     });
     browser.runtime.getBackgroundPage().then((backgroundWindow) => {
-        backgroundWindow.main();
+        if (backgroundWindow) {
+            backgroundWindow.main();
+        }
     });
 };
 
