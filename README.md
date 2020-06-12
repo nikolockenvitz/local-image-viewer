@@ -9,3 +9,5 @@
 
 This Firefox Extension lets you navigate with the arrow keys to the previous/next local image like in a normal image viewer.
 Images are pre-rendered and cached so you won't see any loading normally, the images are just there when you press the left/right arrow key.
+
+![GIF: Navigating four local images in Firefox with arrow keys](docs/example.gif)
