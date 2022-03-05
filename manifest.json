@@ -18,7 +18,8 @@
   ],
   "background": {
     "scripts": [
-      "bs_context_menu.js"
+      "bs_context_menu.js",
+      "bs_intercept_file_requests.js"
     ]
   },
   "browser_action": {
@@ -33,7 +34,12 @@
   },
   "permissions": [
     "storage",
-    "contextMenus"
+    "contextMenus",
+    "webRequest",
+    "webRequestBlocking",
+    "file:///home/*",
+    "https://raw.githubusercontent.com/*",
+    "<all_urls>"
   ],
   "browser_specific_settings": {
     "gecko": {
