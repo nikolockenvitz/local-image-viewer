@@ -1,7 +1,7 @@
 function interceptFileRequests(requestDetails) {
     console.log("intercepted", requestDetails);
     // return { requestHeaders: requestDetails.requestHeaders };
-    return { cancel: true }
+    return {};
 }
 
 async function main() {
@@ -26,14 +26,16 @@ browser.runtime.onMessage.addListener(function (request) {
 });
 
 /*
-open a local file in the browser and open the console
+- install addon as temporary extension (about:debugging, This Firefox)
+- click on Inspect to view this background page's console output
+- open a local file in the browser and open the console
 
 async function req(url, n=100) { console.log((await (await fetch(url)).text()).substring(0, n))}
 
 req("https://raw.githubusercontent.com/nikolockenvitz/local-image-viewer/master/README.md")
-// <-- will be blocked
+// <-- will log "intercepted"
 
 req("file:///home/", 300)
-// <-- is not blocked aaaaarrrrrggggghhhh
+// <-- does nothing aaaaarrrrrggggghhhh
 // missing host permission for file?
 */
